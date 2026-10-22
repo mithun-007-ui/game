@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (request.auth.token.role == 'admin' || request.auth.token.admin == true);
+    }
+
+    function isTeam(teamId) {
+      return isAuthenticated() && (request.auth.token.teamId == teamId || isAdmin());
+    }
+
+    function areResultsRevealed() {
+      return get(/databases/$(database)/documents/auctionState/active).data.resultsRevealed == true;
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // 2. Teams collection (CRITICAL PRIVACY RULE #1)
+    // Only admins can view all teams' private financial documents.
+    // Participants can ONLY read their own team's private purse and spending data.
+    match /teams/{teamId} {
+      allow read: if isTeam(teamId);
+      allow write: if isAdmin();
+    }
+
+    // 3. Public Teams Directory (public info: id, name, color, active - NO financial balances)
+    match /publicTeams/{teamId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 4. Places collection (Public destinations metadata: name, location, image, base price, status)
+    // Does NOT contain secret asset valuations!
+    match /places/{placeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 5. Secret Valuations collection (CRITICAL PRIVACY RULE #2)
+    // Stored in a separate collection from places.
+    // Strictly blocked from participants during auction; only readable by Admin or when results are officially revealed!
+    match /secretValuations/{placeId} {
+      allow read: if isAdmin() || areResultsRevealed();
+      allow write: if isAdmin();
+    }
+
+    // 6. Live Auction State (Public real-time synchronization for all connected devices)
+    match /auctionState/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 7. Purchases collection (CRITICAL PRIVACY RULE #3)
+    // Participants can only read purchases secured by their own team until the Grand Reveal.
+    match /purchases/{purchaseId} {
+      allow read: if isAuthenticated() && (isAdmin() || areResultsRevealed() || request.auth.token.teamId == resource.data.teamId);
+      allow write: if isAdmin();
+    }
+
+    // 8. Audit Logs collection (Tamper-proof auctioneer-only trail)
+    match /auditLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    // 9. Bids collection (Public timeline of bids)
+    match /bids/{bidId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && (isAdmin() || request.resource.data.teamId == request.auth.token.teamId);
+      allow update, delete: if isAdmin();
+    }
+  }
+}
