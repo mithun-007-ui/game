@@ -21,8 +21,8 @@ export default function MobileBottomNav({ adminActiveTab, setAdminActiveTab, par
   const isLive = auctionState?.auctionStatus === 'live';
   const pathname = location.pathname;
 
-  // Don't show on Projector screen
-  if (pathname === '/projector') return null;
+  // Don't show if not authenticated or on Projector screen
+  if (!currentUser || pathname === '/projector' || pathname === '/login') return null;
 
   // 1. Admin Mobile Bottom Navigation
   if (isAdmin && pathname === '/admin') {

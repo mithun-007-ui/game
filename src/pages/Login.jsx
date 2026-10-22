@@ -1,41 +1,50 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuction } from '../context/AuctionContext';
-import { Shield, Users, KeyRound, Sparkles, ArrowRight } from 'lucide-react';
+import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export default function Login() {
-  const [activeTab, setActiveTab] = useState('team'); // 'team' | 'admin'
-  const [teamCode, setTeamCode] = useState('');
-  const [adminPassword, setAdminPassword] = useState('');
-  const { loginTeamByCode, loginAdmin, teams } = useAuction();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { loginWithEmailAndPassword, currentUser, isAdmin, isParticipant } = useAuction();
   const navigate = useNavigate();
 
-  const handleTeamSubmit = (e) => {
-    e.preventDefault();
-    if (!teamCode.trim()) return;
-    const ok = loginTeamByCode(teamCode);
-    if (ok) {
-      navigate('/participant');
-    }
-  };
+  // If already logged in, redirect immediately to their dashboard
+  if (currentUser) {
+    if (isAdmin) return <Navigate to="/admin" replace />;
+    if (isParticipant) return <Navigate to="/participant" replace />;
+    return <Navigate to="/participant" replace />;
+  }
 
-  const handleAdminSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!adminPassword) return;
-    const ok = loginAdmin(adminPassword);
-    if (ok) {
-      navigate('/admin');
+    if (!email.trim() || !password) return;
+
+    try {
+      setIsLoading(true);
+      const res = await loginWithEmailAndPassword(email.trim(), password);
+      if (res?.success) {
+        if (res.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/participant');
+        }
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div
       style={{
-        minHeight: 'calc(100vh - 70px)',
+        minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '30px 20px',
+        padding: '24px 16px',
         position: 'relative',
         zIndex: 1,
       }}
@@ -44,194 +53,168 @@ export default function Login() {
         className="glass-panel"
         style={{
           width: '100%',
-          maxWidth: 480,
-          padding: '36px 32px',
-          border: '1px solid rgba(220, 38, 38, 0.3)',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(185, 28, 28, 0.2)',
+          maxWidth: 440,
+          padding: '40px 32px',
+          border: '1px solid rgba(220, 38, 38, 0.35)',
+          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(220, 38, 38, 0.25)',
+          borderRadius: 'var(--radius-xl)',
         }}
       >
-        {/* Crest */}
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+        {/* Emblem & Title */}
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div
             style={{
-              width: 56,
-              height: 56,
+              width: 60,
+              height: 60,
               borderRadius: '50%',
               background: 'linear-gradient(135deg, var(--crimson-bright), #7f1d1d)',
-              margin: '0 auto 12px',
+              margin: '0 auto 14px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.8rem',
-              boxShadow: '0 0 20px rgba(220, 38, 38, 0.6)',
-              border: '2px solid rgba(255, 255, 255, 0.3)',
+              fontSize: '1.9rem',
+              boxShadow: '0 0 24px rgba(220, 38, 38, 0.6)',
+              border: '2px solid rgba(255, 255, 255, 0.25)',
             }}
           >
             ⛩️
           </div>
 
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)', letterSpacing: '0.04em' }}>
+          <h1
+            style={{
+              fontSize: '1.75rem',
+              fontWeight: 900,
+              color: '#fff',
+              fontFamily: 'var(--font-display)',
+              letterSpacing: '0.04em',
+              marginBottom: 4,
+            }}
+          >
             JAPAN ARENA
-          </h2>
-          <p style={{ fontSize: '0.85rem', color: '#fca5a5', fontFamily: 'var(--font-serif)', marginTop: 2 }}>
+          </h1>
+          <p
+            style={{
+              fontSize: '0.85rem',
+              color: '#fca5a5',
+              fontFamily: 'var(--font-serif)',
+              letterSpacing: '0.1em',
+            }}
+          >
             日本観光名所オークションアリーナ
+          </p>
+          <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: 8 }}>
+            Sign in to enter the live auction arena
           </p>
         </div>
 
-        {/* Tab switcher */}
+        {/* Clean Login Form */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label className="form-label" htmlFor="loginEmail">
+              Email Address
+            </label>
+            <div style={{ position: 'relative' }}>
+              <input
+                id="loginEmail"
+                type="email"
+                required
+                className="form-input"
+                placeholder="name@japan-auction.local"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{ paddingLeft: 40 }}
+                autoComplete="email"
+                autoFocus
+              />
+              <Mail
+                size={16}
+                style={{
+                  position: 'absolute',
+                  left: 14,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'var(--text-muted)',
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label className="form-label" htmlFor="loginPassword">
+              Password
+            </label>
+            <div style={{ position: 'relative' }}>
+              <input
+                id="loginPassword"
+                type="password"
+                required
+                className="form-input"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ paddingLeft: 40 }}
+                autoComplete="current-password"
+              />
+              <Lock
+                size={16}
+                style={{
+                  position: 'absolute',
+                  left: 14,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'var(--text-muted)',
+                }}
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={isLoading}
+            style={{
+              width: '100%',
+              marginTop: 6,
+              padding: '13px',
+              fontSize: '0.98rem',
+              fontWeight: 700,
+              minHeight: 48,
+            }}
+          >
+            {isLoading ? (
+              'Authenticating...'
+            ) : (
+              <>
+                Enter Auction Arena <ArrowRight size={17} />
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Informational Guidance (No technical or Firebase specifics) */}
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            background: 'rgba(0, 0, 0, 0.4)',
-            padding: 4,
-            borderRadius: 'var(--radius-md)',
-            marginBottom: 24,
-            border: '1px solid var(--border-subtle)',
+            marginTop: 24,
+            paddingTop: 18,
+            borderTop: '1px solid var(--border-subtle)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+            fontSize: '0.78rem',
+            color: 'var(--text-muted)',
+            lineHeight: 1.45,
           }}
         >
-          <button
-            type="button"
-            onClick={() => setActiveTab('team')}
-            style={{
-              padding: '10px 14px',
-              background: activeTab === 'team' ? 'linear-gradient(135deg, var(--crimson), #991b1b)' : 'transparent',
-              color: activeTab === 'team' ? '#fff' : 'var(--text-secondary)',
-              border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              fontWeight: 600,
-              fontSize: '0.88rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <Users size={16} /> Team Participant
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('admin')}
-            style={{
-              padding: '10px 14px',
-              background: activeTab === 'admin' ? 'linear-gradient(135deg, var(--crimson), #991b1b)' : 'transparent',
-              color: activeTab === 'admin' ? '#fff' : 'var(--text-secondary)',
-              border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              fontWeight: 600,
-              fontSize: '0.88rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <Shield size={16} /> Auctioneer Admin
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#fca5a5' }}>
+            <ShieldCheck size={14} /> Official Event Access
+          </div>
+          <p>
+            • <strong>Auctioneer:</strong> Use your designated administrator credentials to access the live control cockpit.
+          </p>
+          <p>
+            • <strong>Teams:</strong> Use your team account email and password assigned for this live session.
+          </p>
         </div>
-
-        {/* Team Login Form */}
-        {activeTab === 'team' && (
-          <form onSubmit={handleTeamSubmit}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="teamCodeInput">
-                Team Access Passcode
-              </label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  id="teamCodeInput"
-                  type="text"
-                  className="form-input"
-                  placeholder="e.g. SAKURA-888"
-                  value={teamCode}
-                  onChange={(e) => setTeamCode(e.target.value.toUpperCase())}
-                  style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}
-                  autoFocus
-                />
-                <KeyRound size={16} style={{ position: 'absolute', right: 14, top: 14, color: 'var(--text-muted)' }} />
-              </div>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 4 }}>
-                Enter the passcode provided by the event auctioneer.
-              </span>
-            </div>
-
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: 8 }}>
-              Enter Arena Dashboard <ArrowRight size={16} />
-            </button>
-
-            {/* Quick Demo Team Launcher */}
-            <div style={{ marginTop: 24, paddingTop: 18, borderTop: '1px solid var(--border-subtle)' }}>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Sparkles size={12} color="#f59e0b" /> Quick Select Demo Teams:
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                {teams.slice(0, 4).map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => {
-                      setTeamCode(t.code);
-                      loginTeamByCode(t.code);
-                      navigate('/participant');
-                    }}
-                    className="btn btn-secondary"
-                    style={{ fontSize: '0.78rem', padding: '6px 8px', justifyContent: 'flex-start', borderLeft: `3px solid ${t.color}` }}
-                  >
-                    {t.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </form>
-        )}
-
-        {/* Admin Login Form */}
-        {activeTab === 'admin' && (
-          <form onSubmit={handleAdminSubmit}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="adminPassInput">
-                Auctioneer Master Password
-              </label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  id="adminPassInput"
-                  type="password"
-                  className="form-input"
-                  placeholder="Enter Master Password"
-                  value={adminPassword}
-                  onChange={(e) => setAdminPassword(e.target.value)}
-                  autoFocus
-                />
-                <Shield size={16} style={{ position: 'absolute', right: 14, top: 14, color: 'var(--text-muted)' }} />
-              </div>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 4 }}>
-                Default demo passkey: <code style={{ color: '#fca5a5' }}>admin123</code> or <code style={{ color: '#fca5a5' }}>katana123</code>
-              </span>
-            </div>
-
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: 8 }}>
-              Unlock Auction Control Cockpit <ArrowRight size={16} />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setAdminPassword('katana123');
-                loginAdmin('katana123');
-                navigate('/admin');
-              }}
-              className="btn btn-gold"
-              style={{ width: '100%', marginTop: 12, fontSize: '0.85rem' }}
-            >
-              ⚡ Instant 1-Click Auctioneer Demo Login
-            </button>
-          </form>
-        )}
       </div>
     </div>
   );
