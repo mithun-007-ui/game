@@ -157,7 +157,7 @@ export function AuctionProvider({ children }) {
       // Attempt live Firebase Authentication if credentials exist
       if (isFirebaseConfigured() && auth) {
         try {
-          await signInWithEmailAndPassword(auth, 'auctioneer@japan-auction.local', password === 'admin123' ? 'katana123' : password);
+          await signInWithEmailAndPassword(auth, 'auctioneer@gmail.com', password === 'admin123' ? 'katana123' : password);
         } catch {
           // Silent fallback
         }

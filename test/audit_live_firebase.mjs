@@ -119,7 +119,7 @@ await check('7. Unauthenticated Deduction of Team Purse (Must be BLOCKED)', asyn
 console.log('\n--- PHASE 2: VERIFIED ADMIN PRIVILEGE & WRITE CHECKS ---');
 
 await check('8. Authenticate as Grand Auctioneer (Custom Claims)', async () => {
-  const cred = await signInWithEmailAndPassword(auth, 'auctioneer@japan-auction.local', 'katana123');
+  const cred = await signInWithEmailAndPassword(auth, 'auctioneer@gmail.com', 'katana123');
   const tokenResult = await cred.user.getIdTokenResult();
   const isAdmin = tokenResult.claims.role === 'admin' || tokenResult.claims.admin === true;
   return `Authenticated UID: ${cred.user.uid}, Claims: role=${tokenResult.claims.role}, admin=${tokenResult.claims.admin} (isAdmin=${isAdmin})`;

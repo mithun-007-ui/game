@@ -119,7 +119,7 @@ export default function Login() {
                 type="email"
                 required
                 className="form-input"
-                placeholder="name@japan-auction.local"
+                placeholder="name@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={{ paddingLeft: 40 }}

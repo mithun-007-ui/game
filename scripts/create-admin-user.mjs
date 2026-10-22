@@ -19,7 +19,7 @@ const app = initializeApp({
 
 const auth = getAuth(app);
 
-const ADMIN_EMAIL = 'auctioneer@japan-auction.local';
+const ADMIN_EMAIL = 'auctioneer@gmail.com';
 const ADMIN_PASSWORD = 'katana123'; // or admin123 (at least 6 characters)
 
 console.log(`Setting up verified Auctioneer Admin user in Firebase Authentication...`);
