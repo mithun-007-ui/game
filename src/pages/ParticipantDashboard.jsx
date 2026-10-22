@@ -3,6 +3,7 @@ import { useAuction } from '../context/AuctionContext';
 import { Navigate, Link } from 'react-router-dom';
 import PlaceCard from '../components/PlaceCard';
 import CountdownTimer from '../components/CountdownTimer';
+import MobileBottomNav from '../components/MobileBottomNav';
 import { formatYen } from '../utils/currency';
 import {
   Wallet,
@@ -45,7 +46,7 @@ export default function ParticipantDashboard() {
   const availablePlaces = places.filter((p) => p.status === 'available');
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div id="participant-dashboard-root" className="has-bottom-nav" style={{ maxWidth: 1200, margin: '0 auto', padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* FINAL RESULTS BANNER (When unlocked by auctioneer) */}
       {resultsRevealed && (
         <div
@@ -81,6 +82,7 @@ export default function ParticipantDashboard() {
 
       {/* TEAM FINANCIAL HEADER CARD */}
       <div
+        id="my-team-section"
         className="glass-panel"
         style={{
           padding: '24px',
@@ -179,6 +181,7 @@ export default function ParticipantDashboard() {
 
       {/* LIVE AUCTION STAGE FEED */}
       <div
+        id="live-stage-section"
         className="glass-panel"
         style={{
           padding: '24px',
@@ -298,7 +301,7 @@ export default function ParticipantDashboard() {
       </div>
 
       {/* TABS: MY PURCHASED PLACES vs AVAILABLE CATALOG */}
-      <div>
+      <div id="catalog-section">
         <div
           style={{
             display: 'flex',
@@ -306,6 +309,7 @@ export default function ParticipantDashboard() {
             borderBottom: '1px solid var(--border-subtle)',
             paddingBottom: 12,
             marginBottom: 20,
+            overflowX: 'auto',
           }}
         >
           <button
@@ -322,6 +326,8 @@ export default function ParticipantDashboard() {
               alignItems: 'center',
               gap: 8,
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              minHeight: 44,
             }}
           >
             <ShoppingBag size={16} /> My Team’s Secured Places ({myPurchasedPlaces.length})
@@ -341,6 +347,8 @@ export default function ParticipantDashboard() {
               alignItems: 'center',
               gap: 8,
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              minHeight: 44,
             }}
           >
             <Landmark size={16} /> Available Catalog ({availablePlaces.length})
@@ -374,7 +382,7 @@ export default function ParticipantDashboard() {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
                   gap: 20,
                 }}
               >
@@ -396,7 +404,7 @@ export default function ParticipantDashboard() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
               gap: 20,
             }}
           >
@@ -411,6 +419,10 @@ export default function ParticipantDashboard() {
           </div>
         )}
       </div>
+
+      {/* Participant Mobile Bottom Nav */}
+      <MobileBottomNav participantActiveTab={activeCatalogTab} setParticipantActiveTab={setActiveCatalogTab} />
     </div>
   );
 }
+

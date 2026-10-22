@@ -195,7 +195,7 @@ export default function Navbar() {
                   boxShadow: `0 0 8px ${dotColor}`,
                 }}
               />
-              <span style={{ fontWeight: 600 }}>{connectionLabel}</span>
+              <span className="nav-connection-label" style={{ fontWeight: 600 }}>{connectionLabel}</span>
               <HelpCircle size={12} color="var(--text-muted)" />
             </button>
 

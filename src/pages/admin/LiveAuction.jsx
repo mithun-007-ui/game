@@ -144,6 +144,7 @@ export default function LiveAuction() {
 
       {/* Main Auction Stage: 2-column layout */}
       <div
+        className="live-auction-grid"
         style={{
           display: 'grid',
           gridTemplateColumns: 'minmax(0, 1.25fr) minmax(0, 1fr)',
@@ -219,7 +220,7 @@ export default function LiveAuction() {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
                   gap: 16,
                   padding: '16px',
                   background: 'rgba(0, 0, 0, 0.3)',
@@ -396,6 +397,7 @@ export default function LiveAuction() {
 
             {/* Sale Finalization Actions */}
             <div
+              className="auction-actions-grid"
               style={{
                 display: 'grid',
                 gridTemplateColumns: '1.2fr 1fr',

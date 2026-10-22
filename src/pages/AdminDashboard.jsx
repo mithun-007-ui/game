@@ -8,6 +8,7 @@ import TeamFinancialOverview from './admin/TeamFinancialOverview';
 import AuctionHistory from './admin/AuctionHistory';
 import AdminLeaderboard from './admin/AdminLeaderboard';
 import GameSettings from './admin/GameSettings';
+import MobileBottomNav from '../components/MobileBottomNav';
 import { Gavel, Users, Landmark, DollarSign, History, Trophy, Settings } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -29,7 +30,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div style={{ maxWidth: 1440, margin: '0 auto', padding: '24px 20px', minHeight: 'calc(100vh - 70px)' }}>
+    <div style={{ maxWidth: 1440, margin: '0 auto', padding: '24px 20px', minHeight: 'calc(100vh - 70px)' }} className="has-bottom-nav">
       {/* Navigation Sub-Tabs Bar */}
       <nav
         aria-label="Admin Navigation Tabs"
@@ -40,6 +41,7 @@ export default function AdminDashboard() {
           paddingBottom: 16,
           marginBottom: 24,
           borderBottom: '1px solid var(--border-subtle)',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         {tabs.map((t) => {
@@ -64,6 +66,7 @@ export default function AdminDashboard() {
                 whiteSpace: 'nowrap',
                 transition: 'all 0.2s ease',
                 boxShadow: isActive ? '0 4px 14px rgba(220, 38, 38, 0.35)' : 'none',
+                minHeight: 44,
               }}
             >
               <Icon size={16} color={isActive ? '#fff' : 'var(--text-muted)'} />
@@ -83,6 +86,10 @@ export default function AdminDashboard() {
         {activeTab === 'leaderboard' && <AdminLeaderboard />}
         {activeTab === 'settings' && <GameSettings />}
       </main>
+
+      {/* Mobile-Friendly Bottom Navigation */}
+      <MobileBottomNav adminActiveTab={activeTab} setAdminActiveTab={setActiveTab} />
     </div>
   );
 }
+

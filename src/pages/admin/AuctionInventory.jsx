@@ -120,9 +120,9 @@ export default function AuctionInventory() {
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           {/* Filter Pills */}
-          <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', padding: 4, borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', background: 'rgba(0,0,0,0.3)', padding: 4, borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', gap: 4 }}>
             {['all', 'available', 'live', 'sold', 'unsold'].map((f) => (
               <button
                 key={f}
@@ -137,6 +137,7 @@ export default function AuctionInventory() {
                   fontWeight: 600,
                   textTransform: 'capitalize',
                   cursor: 'pointer',
+                  minHeight: 36,
                 }}
               >
                 {f}
@@ -144,7 +145,7 @@ export default function AuctionInventory() {
             ))}
           </div>
 
-          <button onClick={() => setShowAddModal(true)} className="btn btn-primary">
+          <button onClick={() => setShowAddModal(true)} className="btn btn-primary" style={{ minHeight: 44 }}>
             <Plus size={16} /> Add Destination
           </button>
         </div>
@@ -154,7 +155,7 @@ export default function AuctionInventory() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))',
           gap: 20,
         }}
       >
