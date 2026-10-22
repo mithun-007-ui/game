@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuction } from '../context/AuctionContext';
-import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Lock, Mail, ArrowRight } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -190,31 +190,6 @@ export default function Login() {
             )}
           </button>
         </form>
-
-        {/* Informational Guidance (No technical or Firebase specifics) */}
-        <div
-          style={{
-            marginTop: 24,
-            paddingTop: 18,
-            borderTop: '1px solid var(--border-subtle)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-            fontSize: '0.78rem',
-            color: 'var(--text-muted)',
-            lineHeight: 1.45,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#fca5a5' }}>
-            <ShieldCheck size={14} /> Official Event Access
-          </div>
-          <p>
-            • <strong>Auctioneer:</strong> Use your designated administrator credentials to access the live control cockpit.
-          </p>
-          <p>
-            • <strong>Teams:</strong> Use your team account email and password assigned for this live session.
-          </p>
-        </div>
       </div>
     </div>
   );
